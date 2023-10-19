@@ -2,18 +2,19 @@ rules:
   - id: django-csrf-by-get-request
     languages:
       - python
-    message: |
-      "Data altering method done in get request in 
-      function: $FUNC 
-      method: $MODEL.$F()"
+    message: "Data altering method done in get request in function $FUNC"
     patterns:
       - pattern: |
           $MODEL = ...
           ...
           $MODEL.$F(...)
-      - pattern-inside: |
-          def $FUNC(request, ...): 
-            ...
+      - pattern-either:
+        - pattern-inside: |
+            def $FUNC(request, ...): 
+              ...
+        - pattern-inside: |
+            def get(self, request, ...): 
+              ...
       - pattern-not-inside: |
           @require_POST
           def $FUNC(...):
@@ -29,4 +30,4 @@ rules:
             ...
             $MODEL.$F(...)
             ...
-    severity: INFO
+    severity: ERROR

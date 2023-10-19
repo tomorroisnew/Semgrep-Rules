@@ -1,0 +1,23 @@
+rules:
+  - patterns:
+      - patterns:
+          - pattern-either:
+              - pattern: django.core.validators.FileExtensionValidator([...,'$EXT',...], ...)
+              - pattern: django.core.validators.FileExtensionValidator(..., allowed_extension=[...,'$EXT',...], ...)
+          - metavariable-regex:
+              metavariable: '$EXT'
+              regex: '(svg|xml|html|rss)'
+    id: django-FileExtensionValidator-allow-insecure-extension
+    message: "svg file upload allowed which lead to stored xss "
+    languages:
+      - python
+    severity: WARNING
+    metadata:
+      category: security
+      subcategory:
+        - vuln
+      confidence: MEDIUM
+      impact: HIGH
+      likelihood: MEDIUM
+      technology:
+        - django
