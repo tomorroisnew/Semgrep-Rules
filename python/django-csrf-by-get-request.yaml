@@ -1,0 +1,32 @@
+rules:
+  - id: django-csrf-by-get-request
+    languages:
+      - python
+    message: |
+      "Data altering method done in get request in 
+      function: $FUNC 
+      method: $MODEL.$F()"
+    patterns:
+      - pattern: |
+          $MODEL = ...
+          ...
+          $MODEL.$F(...)
+      - pattern-inside: |
+          def $FUNC(request, ...): 
+            ...
+      - pattern-not-inside: |
+          @require_POST
+          def $FUNC(...):
+            ...
+      - pattern-not-inside: |
+          if(request.method == "POST"):...
+      - metavariable-regex:
+          metavariable: '$F'
+          regex:  '(update|delete|save)'
+      - pattern-not: |
+          ...
+          if(request.method == "POST"):
+            ...
+            $MODEL.$F(...)
+            ...
+    severity: INFO
