@@ -1,0 +1,25 @@
+rules:
+- id: django-get-input-to-render-with-safe
+  mode: join
+  join:
+    rules:
+    #Find all user input in get and used in render
+    - id: get-user-input
+      languages: [python]
+      patterns: 
+        - pattern: |
+            $GETPARAM = request.GET.get(...)
+            ...
+            render(request, $PATHH, {...,"$RENDERVAR": $GETPARAM,...})
+
+    #Find Render with | safe
+    - id: render-with-safe
+      languages: [generic]
+      patterns: 
+        - pattern: "$RENDERVAR | safe"
+
+    on:
+    - 'get-user-input.$GETPARAM == get-user-input.$GETPARAM'
+    - 'get-user-input.$PATHH < render-with-safe.path'
+  message: "Render with safe from user input"
+  severity: INFO

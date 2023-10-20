@@ -4,6 +4,14 @@ rules:
           - pattern-either:
               - pattern: django.core.validators.FileExtensionValidator([...,'$EXT',...], ...)
               - pattern: django.core.validators.FileExtensionValidator(..., allowed_extension=[...,'$EXT',...], ...)
+              - pattern: |
+                  $VARIAB = [..., '$EXT', ...]
+                  ...
+                  django.core.validators.FileExtensionValidator($VARIAB, ...)
+              - pattern: |
+                  $VARIAB = [..., '$EXT', ...]
+                  ...
+                  django.core.validators.FileExtensionValidator(..., allowed_extension=$VARIAB, ...)
           - metavariable-regex:
               metavariable: '$EXT'
               regex: '(svg|xml|html|rss)'
