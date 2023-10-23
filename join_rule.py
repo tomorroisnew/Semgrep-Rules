@@ -105,7 +105,8 @@ class Condition:
             )
 
 
-db = pw.SqliteDatabase("/mnt/storage/nas/hacking/sem.sqlite")
+db = pw.SqliteDatabase(":memory:")
+#db = pw.SqliteDatabase("/mnt/storage/nas/hacking/sem.sqlite")
 
 
 class BaseModel(pw.Model):  # type: ignore
@@ -233,23 +234,23 @@ def match_on_conditions(  # type: ignore
     if(not_in):
         #evaluated_conditions.append()
         print("PUTA")
-        x = (joined.select(last_condition_model.raw)
+        x = (joined
               .select(getattr(not_in[0], '$CALLER')).distinct()
               .where(getattr(not_in[0], not_in[1]) == getattr(not_in[2], not_in[3])))
         print(x)
         evaluated_conditions.append(getattr(not_in[0], '$CALLER').not_in(x))
         print("TAPOS PUTA")
-        subquery = (
-            joined.select(last_condition_model.raw)
-            .select(not_in[2].id)  # You can select any non-null column here; 'id' is just an example.
-            .where(*evaluated_conditions)
-        )
-        evaluated_conditions = subquery
+        #subquery = (
+        #    joined.select(last_condition_model.raw)
+        #    .select(not_in[2].id)  # You can select any non-null column here; 'id' is just an example.
+        #    .where(*evaluated_conditions)
+        #)
+        #evaluated_conditions = subquery
 
     query = (
         joined.select(last_condition_model.raw)
         .distinct()
-        .where(evaluated_conditions)  # type: ignore
+        .where(*evaluated_conditions)  # type: ignore
     )
     print(query)
     return query
